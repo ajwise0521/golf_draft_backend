@@ -2,14 +2,18 @@
 
 namespace App;
 
+use Ramsey\Uuid\Uuid;
+use App\Models\Draft;
+use App\Models\LeagueMember;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
     use Notifiable;
-
+    protected $keyType = 'string';
+    public $incrementing = false;
     /**
      * The attributes that are mass assignable.
      *
@@ -36,4 +40,22 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->id = (string) Uuid::uuid4();
+        });
+    }
+
+    public function Leagues()
+    {
+        return $this->hasMany(LeagueMember::class, 'user_id', 'id');
+    }
+
+    public function Drafts() 
+    {
+        return $this->hasManyThrough(Draft::class, LeagueMember::class, 'user_id', 'league_id', 'id', 'league_id');
+    }
 }

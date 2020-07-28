@@ -18,5 +18,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('cors')->get('/players/{tournamentId}', 'TournamentPlayersController@getPlayersByTournament');
+Route::middleware('auth:api')->get('/get-players/{draft}/{user}', 'TournamentPlayersController@getAvailablePlayers');
 
+Route::middleware('auth:api')->get('/league-members/{league}', 'LeagueMembersController@getLeagueMembers');
+
+
+Route::middleware('auth:api')->get('draft/{draft}', 'DraftController@getDraft');
+Route::middleware('auth:api')->post('draft-player/{draftPick}', 'DraftController@draftPlayer');
+Route::middleware('auth:api')->get('drafts', 'DraftController@getDrafts');
+Route::middleware('auth:api')->get('create-draft-order/{draft}', 'DraftController@createDraftOrder');
+Route::middleware('auth:api')->get('current-pick/{draft}', 'DraftController@getCurrentDraftPick');
+Route::middleware('auth:api')->get('players/{draft}/{user}', 'DraftController@getMemberDraftedPlayers');
