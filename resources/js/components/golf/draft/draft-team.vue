@@ -41,6 +41,7 @@
 		mounted() {
 			console.log('league member: ' + vueStore.state.auth.use_id);
 			this.selectedLeagueMember = vueStore.state.auth.user_id;
+			this.getMemberTeam();
 			eventBus.$on('update-team-players', this.getMemberTeam)
             Pusher.logToConsole = true;
 

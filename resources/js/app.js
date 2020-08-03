@@ -7,6 +7,7 @@
 require('./bootstrap');
 
 import vueRouter from 'vue-router';
+import Multiselect from 'vue-multiselect'
 
 window.Vue = require('vue');
 window.Vuex = require('vuex');
@@ -17,6 +18,7 @@ window.vueStore = new Vuex.Store({
     },
 });
 Vue.use(vueRouter);
+Vue.component('multiselect', Multiselect)
 
 // Vue.component('leagues', require('./components/golf/leagues'))
 
@@ -46,7 +48,7 @@ const routes = [
 	{ path: '/login', component: require('./components/auth/login').default},
     { path: '/logout', component: require('./components/auth/logout').default},
 	{ path: '/', component: require('./components/home').default},
-	{ path: '/leagues', component: require('./components/golf/leagues').default},
+	{ path: '/leagues', component: require('./components/golf/leagues/home').default},
     { path: '/draft', component: require('./components/golf/draft/draft-landing').default},
 	{ path: '/draft/:draft_id', component: require('./components/golf/draft/home').default}
 ];
@@ -54,6 +56,9 @@ const routes = [
 
 Vue.component('navbar', require('./components/navbar.vue').default);
 Vue.component('app-container', require('./components/app-container.vue').default);
+Vue.component('modal', require('./components/modal/modal.vue').default);
+Vue.component('modal-body', require('./components/modal/modal-body.vue').default);
+Vue.component('modal-footer', require('./components/modal/modal-footer.vue').default);
 
 
 /**

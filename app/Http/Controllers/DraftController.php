@@ -73,4 +73,10 @@ class DraftController extends Controller
 	{
 		return response()->json(DraftPick::where('draft_id', $draft->id)->where('user_id', $user->id)->orderBy('draft_pick')->with('Player')->get());
 	}
+
+	public function createDraft(Request $request) {
+		\Log::debug('request', (array)$request->all());
+		$draft = new Draft();
+		// $draft
+	}
 }

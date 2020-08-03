@@ -29,3 +29,9 @@ Route::middleware('auth:api')->get('drafts', 'DraftController@getDrafts');
 Route::middleware('auth:api')->get('create-draft-order/{draft}', 'DraftController@createDraftOrder');
 Route::middleware('auth:api')->get('current-pick/{draft}', 'DraftController@getCurrentDraftPick');
 Route::middleware('auth:api')->get('players/{draft}/{user}', 'DraftController@getMemberDraftedPlayers');
+Route::middleware('auth:api')->post('draft/create', 'DraftController@createDraft');
+
+Route::middleware('auth:api')->get('user/leagues/{user}', 'LeaguesController@getUserLeagues');
+
+
+Route::middleware('auth:api')->get('tournaments/available', 'TournamentsController@getAvailableTournaments');
