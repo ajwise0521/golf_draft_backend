@@ -59,6 +59,8 @@
             var channel = pusher.subscribe('draft-page');
             channel.bind('player-drafted', function(data) {
                 eventBus.$emit('player-drafted', true);
+                toastr.success(data.message);
+                eventBus.$emit('update-recent-picks', true);
 
             });
         },

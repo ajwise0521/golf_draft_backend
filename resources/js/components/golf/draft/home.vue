@@ -16,6 +16,7 @@
                     </div>
 
                     <div class="card-body">
+                        <past-picks :pastPicks="pastPicks"></past-picks>
                     </div>
                 </div>
 			</div>
@@ -40,15 +41,19 @@
                 selectedLeagueMember: [],
                 draft: [],
                 currentPick: [],
+                pastPicks: [],
             }
         },
         mounted() {
             eventBus.$on('current-pick-change', this.updateCurrentPick);
+            eventBus.$on('update-recent-picks', this.getPastPicks);
+            this.getPastPicks();
             this.getDraft();
         }, 
         components: {
         	'available-players': require('./available-players').default,
-        	'draft-team': require('./draft-team').default
+        	'draft-team': require('./draft-team').default,
+            'past-picks': require('./past-picks').default
         },
         methods: {
             getLeagueMembers: function () {
@@ -66,9 +71,16 @@
             },
             updateCurrentPick: function (pick) {
                 this.currentPick = pick;
+            },
+            getPastPicks: function () {
+                axios.get('/api/draft/past-picks/' + this.$route.params.draft_id)
+                    .then(response => {
+                        this.pastPicks = response.data;
+                    });
             }
         },
         beforeDestroy() {
+            eventBus.$off('update-recent-picks', this.getPastPicks);
             eventBus.$off('current-pick-change', this.updateCurrentPick);
         }
     }

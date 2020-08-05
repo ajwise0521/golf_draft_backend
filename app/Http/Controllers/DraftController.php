@@ -79,4 +79,15 @@ class DraftController extends Controller
 		$draft = new Draft();
 		// $draft
 	}
+
+	public function getPastPicks(Draft $draft, Request $request)
+	{
+		$pastPicks = DraftPick::where('draft_id', $draft->id)
+			->whereNotNull('player_id')
+			->with('Player')
+			->orderBy('draft_pick', 'DESC')
+			->get();
+
+		return response()->json($pastPicks);
+	}
 }

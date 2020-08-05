@@ -30,6 +30,7 @@ class TournamentPlayersController extends Controller
                     return $query->where('rank', '>=', $constraint->min_rank)
                         ->where('rank', '<=', $constraint->max_rank)->get();
                 })
+                ->orderBy('rank')
                 ->get();
                 \Log::debug('players', (array)$tempPlayers);
                 if($players == NULL) {
