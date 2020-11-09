@@ -32,6 +32,8 @@ Route::middleware('auth:api')->get('players/{draft}/{user}', 'DraftController@ge
 Route::middleware('auth:api')->post('draft/create', 'DraftController@createDraft');
 Route::middleware('auth:api')->get('draft/past-picks/{draft}', 'DraftController@getPastPicks');
 
+Route::middleware('auth:api')->post('draft/start/{draft}', 'DraftController@startDraft');
+
 
 Route::middleware('auth:api')->get('user/leagues/{user}', 'LeaguesController@getUserLeagues');
 

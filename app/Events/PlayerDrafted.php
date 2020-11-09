@@ -12,10 +12,12 @@ class PlayerDrafted implements ShouldBroadcast
   use Dispatchable, InteractsWithSockets, SerializesModels;
 
   public $message;
+  public $draftStatus;
 
-  public function __construct($message)
+  public function __construct($message, $draftStatus)
   {
       $this->message = $message;
+      $this->draftStatus = $draftStatus;
   }
 
   public function broadcastOn()

@@ -24,7 +24,7 @@
 		<ul class="list-group">
 			<li class="list-group-item list-group-item-action" v-for="player in players">
 				{{player.rank}}. {{player.name}}			
-				<button v-if="isDrafting" type="button" class="btn btn-dark float-right" data-toggle="modal" data-target="#draftModal" v-on:click="selectedPlayer = player">Draft</button>	
+				<button v-if="isDrafting && draftStatus == 'Active'" type="button" class="btn btn-dark float-right" data-toggle="modal" data-target="#draftModal" v-on:click="selectedPlayer = player">Draft</button>	
 			</li>
 		</ul>
 	</div>
@@ -41,8 +41,10 @@
         		},
                 currentPick: [],
                 isDrafting: false,
+                draftStatus: null,
         	}
         },
+        props: ['draft'],
         mounted() {
         	eventBus.$on('draft-player', this.draftPlayer)
         	eventBus.$on('close-draft-modal', this.closeDraftModal)
@@ -61,6 +63,7 @@
                 eventBus.$emit('player-drafted', true);
                 toastr.success(data.message);
                 eventBus.$emit('update-recent-picks', true);
+                this.draftStatus = data.draftStatus;
 
             });
         },
@@ -98,17 +101,29 @@
             checkIsDrafting: function () {
                 if(vueStore.state.auth.user_id == this.currentPick.user_id) {
                     this.isDrafting = true;
+                    this.playSound('sounds/your_turn_to_draft.mp3');
                 }
             },
             playerDrafted: function() {
                 this.loadPlayers();
                 this.getCurrentDraftPick();
+            },
+            playSound (sound) {
+              if(sound) {
+                var audio = new Audio(sound);
+                audio.play();
+              }
             }
         },
         beforeDestroy() {
             eventBus.$off('draft-player', this.draftPlayer)
             eventBus.$off('close-draft-modal', this.closeDraftModal)
             eventBus.$off('player-drafted', this.playerDrafted)
+        },
+        watch: {
+            draft: function (draft) {
+                this.draftStatus = draft.status;
+            }
         }
     }
 </script>

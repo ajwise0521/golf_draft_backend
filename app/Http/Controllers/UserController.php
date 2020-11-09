@@ -53,10 +53,15 @@ class UserController extends Controller
 		$credentials = $request->only('email', 'password');
 		if(Auth::attempt($credentials)) {
 			return response()->json([
+				'authenticate' => true,
 				'name' => Auth::user()->name,
 				'access_token' => Auth::user()->api_token,
 				'user_id' => Auth::user()->id
 			]);
 		}
+
+		return response()->json([
+			'authenticate' => false,
+		], 200);
 	}
 }

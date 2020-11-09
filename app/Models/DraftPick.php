@@ -29,7 +29,10 @@ class DraftPick extends Model
     	return User::where('id', $this->user_id)->first()->name;
     }
 
-
+    public function Draft()
+    {
+        return $this->belongsTo(Draft::class, 'draft_id', 'id');
+    }
 
     public static function boot()
     {

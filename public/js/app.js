@@ -1982,6 +1982,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 module.exports = {
   data: function data() {
     return {
@@ -1994,13 +1997,18 @@ module.exports = {
     login: function login() {
       var _this = this;
 
+      this.loginFailed = false;
       axios.post('/login', {
         email: this.email,
         password: this.password
       }).then(function (response) {
-        vueStore.commit('auth/authenticate', response.data);
+        if (response.data.authenticate) {
+          vueStore.commit('auth/authenticate', response.data);
 
-        _this.$router.replace('/');
+          _this.$router.replace('/');
+        } else {
+          _this.loginFailed = true;
+        }
       })["catch"](function (error) {
         _this.loginFailed = true;
       });
@@ -2081,9 +2089,11 @@ __webpack_require__.r(__webpack_exports__);
         name: ''
       },
       currentPick: [],
-      isDrafting: false
+      isDrafting: false,
+      draftStatus: null
     };
   },
+  props: ['draft'],
   mounted: function mounted() {
     eventBus.$on('draft-player', this.draftPlayer);
     eventBus.$on('close-draft-modal', this.closeDraftModal);
@@ -2098,6 +2108,7 @@ __webpack_require__.r(__webpack_exports__);
       eventBus.$emit('player-drafted', true);
       toastr.success(data.message);
       eventBus.$emit('update-recent-picks', true);
+      this.draftStatus = data.draftStatus;
     });
   },
   methods: {
@@ -2131,17 +2142,29 @@ __webpack_require__.r(__webpack_exports__);
     checkIsDrafting: function checkIsDrafting() {
       if (vueStore.state.auth.user_id == this.currentPick.user_id) {
         this.isDrafting = true;
+        this.playSound('sounds/your_turn_to_draft.mp3');
       }
     },
     playerDrafted: function playerDrafted() {
       this.loadPlayers();
       this.getCurrentDraftPick();
+    },
+    playSound: function playSound(sound) {
+      if (sound) {
+        var audio = new Audio(sound);
+        audio.play();
+      }
     }
   },
   beforeDestroy: function beforeDestroy() {
     eventBus.$off('draft-player', this.draftPlayer);
     eventBus.$off('close-draft-modal', this.closeDraftModal);
     eventBus.$off('player-drafted', this.playerDrafted);
+  },
+  watch: {
+    draft: function draft(_draft) {
+      this.draftStatus = _draft.status;
+    }
   }
 });
 
@@ -2331,6 +2354,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2338,14 +2363,25 @@ __webpack_require__.r(__webpack_exports__);
       selectedLeagueMember: [],
       draft: [],
       currentPick: [],
-      pastPicks: []
+      pastPicks: [],
+      isOwner: false
     };
   },
   mounted: function mounted() {
     eventBus.$on('current-pick-change', this.updateCurrentPick);
     eventBus.$on('update-recent-picks', this.getPastPicks);
+    eventBus.$on('update-draft', this.updateDraft);
     this.getPastPicks();
     this.getDraft();
+    Pusher.logToConsole = true;
+    var pusher = new Pusher('fef224f1e53af53c6251', {
+      cluster: 'us2'
+    });
+    var channel = pusher.subscribe('draft-page');
+    channel.bind('draft-started', function (data) {
+      console.log('hello world');
+      eventBus.$emit('update-draft', data.data);
+    });
   },
   components: {
     'available-players': __webpack_require__(/*! ./available-players */ "./resources/js/components/golf/draft/available-players.vue")["default"],
@@ -2367,6 +2403,8 @@ __webpack_require__.r(__webpack_exports__);
         _this2.draft = response.data;
 
         _this2.getLeagueMembers();
+
+        _this2.checkOwner();
       });
     },
     updateCurrentPick: function updateCurrentPick(pick) {
@@ -2378,11 +2416,26 @@ __webpack_require__.r(__webpack_exports__);
       axios.get('/api/draft/past-picks/' + this.$route.params.draft_id).then(function (response) {
         _this3.pastPicks = response.data;
       });
+    },
+    checkOwner: function checkOwner() {
+      if (this.draft.league.created_by == vueStore.state.auth.user_id) this.isOwner = true;
+    },
+    startDraft: function startDraft() {
+      var _this4 = this;
+
+      axios.post('api/draft/start/' + this.draft.id).then(function (response) {
+        _this4.getDraft();
+      });
+    },
+    updateDraft: function updateDraft(draft) {
+      console.log(draft);
+      this.draft = draft;
     }
   },
   beforeDestroy: function beforeDestroy() {
     eventBus.$off('update-recent-picks', this.getPastPicks);
     eventBus.$off('current-pick-change', this.updateCurrentPick);
+    eventBus.$off('update-draft', this.updateDraft);
   }
 });
 
@@ -39489,6 +39542,14 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
+    _vm.loginFailed
+      ? _c(
+          "div",
+          { staticClass: "alert alert-danger", attrs: { role: "alert" } },
+          [_vm._v("\n            Invalid Username or password\n        ")]
+        )
+      : _vm._e(),
+    _vm._v(" "),
     _c("div", { staticClass: "row justify-content-center" }, [
       _c("div", { staticClass: "col-md-8" }, [
         _c("div", { staticClass: "card" }, [
@@ -39772,7 +39833,7 @@ var render = function() {
                 _vm._s(player.name) +
                 "\t\t\t\n\t\t\t\t"
             ),
-            _vm.isDrafting
+            _vm.isDrafting && _vm.draftStatus == "Active"
               ? _c(
                   "button",
                   {
@@ -39860,7 +39921,7 @@ var render = function() {
                   _c("td"),
                   _vm._v(" "),
                   _c("td", [
-                    draft.status == "Active"
+                    draft.status == "Active" || draft.status == "Created"
                       ? _c(
                           "button",
                           {
@@ -40049,7 +40110,7 @@ var render = function() {
               _vm._v("Available Players")
             ]),
             _vm._v(" "),
-            _c("available-players"),
+            _c("available-players", { attrs: { draft: _vm.draft } }),
             _vm._v(" "),
             _c("div", { staticClass: "card-body" })
           ],
@@ -40060,11 +40121,20 @@ var render = function() {
       _c("div", { staticClass: "col-md-6" }, [
         _c("div", { staticClass: "card" }, [
           _c("div", { staticClass: "card-header" }, [
-            _vm._v(
-              "\n                        Drafting Now: " +
-                _vm._s(_vm.currentPick.userName) +
-                "\n                    "
-            )
+            _vm.draft.status == "Active"
+              ? _c("div", [
+                  _vm._v("Drafting Now: " + _vm._s(_vm.currentPick.userName))
+                ])
+              : _vm.isOwner
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-dark float-right",
+                    on: { click: _vm.startDraft }
+                  },
+                  [_vm._v("Start")]
+                )
+              : _vm._e()
           ]),
           _vm._v(" "),
           _c(

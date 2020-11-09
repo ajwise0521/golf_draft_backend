@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Auth;
 use App\User;
 use App\Models\Draft;
+use App\Events\StartDraft;
 use App\Models\DraftPick;
 use Illuminate\Http\Request;
 use App\Events\PlayerDrafted;
@@ -30,12 +31,20 @@ class DraftController extends Controller
 	function draftPlayer(DraftPick $draftPick, Request $request) {
 		$draftPick->player_id = $request->id;
 		$draftPick->save();
+		$draft = $draftPick->Draft;
 
-		event(new PlayerDrafted($request->name . ' has been drafted by ' . $request->user()->name));
+		event(new PlayerDrafted($request->name . ' has been drafted by ' . $request->user()->name, $draft->status));
 
 		return response()->json('success', 200);
 	}
+	public function startDraft(Draft $draft)
+	{
+		$draft->status = 'Active';
+		$draft->save();
+		event(new StartDraft($draft));
+		event(new PlayerDrafted('The Draft Has Begun! Good Luck Fuckers!', $draft->status));
 
+	}
 
 	public function getDrafts(Request $request)
 	{

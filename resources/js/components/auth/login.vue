@@ -1,5 +1,8 @@
 <template>
 	<div class="container">
+        <div v-if="loginFailed" class="alert alert-danger" role="alert">
+            Invalid Username or password
+        </div>
 	    <div class="row justify-content-center">
 	        <div class="col-md-8">
 	            <div class="card">
@@ -69,14 +72,20 @@
         },
         methods: {
             login: function () {
+                this.loginFailed = false;
                 axios.post('/login', {
                     email: this.email,
                     password: this.password,
                 })
                     .then((response) => {
-                        vueStore.commit('auth/authenticate', response.data);
+                        if(response.data.authenticate) {
+                            vueStore.commit('auth/authenticate', response.data);
 
-                        this.$router.replace('/');
+                            this.$router.replace('/');
+                        } else {
+                            this.loginFailed = true;
+
+                        }
                     })
                     .catch((error) => {
                         this.loginFailed = true;

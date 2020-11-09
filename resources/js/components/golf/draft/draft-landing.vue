@@ -20,7 +20,7 @@
 									<td>{{draft.tournament.name}}</td>
 									<td></td>
 									<td></td>
-									<td><button v-if="draft.status == 'Active'" v-on:click="$router.push('/draft/' + draft.id)" class="btn btn-dark">GO</button></td>
+									<td><button v-if="draft.status == 'Active' || draft.status == 'Created'" v-on:click="$router.push('/draft/' + draft.id)" class="btn btn-dark">GO</button></td>
 								</tr>
 							</tbody>
 						</table>
