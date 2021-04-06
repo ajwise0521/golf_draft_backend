@@ -43,7 +43,7 @@ class createSnakeDraftOrder {
 		$picks = DraftPick::where('draft_id', $draft->id)->orderBy('draft_pick')->limit($membersCount)->get();
 
 		foreach($picks as $pick) {
-			print($pick->draft_pick . '. ' . $pick->User->name . PHP_EOL);
+			print($pick->draft_pick . '. ' . $pick->userName . PHP_EOL);
 		}
 	}
 }
