@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\User;
 use Ramsey\Uuid\Uuid;
+use App\Models\LeagueMember;
 use Illuminate\Database\Eloquent\Model;
 
 class DraftPick extends Model
@@ -19,6 +20,11 @@ class DraftPick extends Model
     	return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    public function leagueMember()
+    {
+        return $this->belongsTo(LeagueMember::class, 'user_id', 'id');
+    }
+
     public function Player() {
     	return $this->belongsTo(TournamentPlayer::class, 'player_id', 'id');
     }
@@ -26,7 +32,7 @@ class DraftPick extends Model
     // Attributes
     public function getUserNameAttribute()
     {
-    	return User::where('api_token', $this->user_id)->first()->name;
+    	return $this->leagueMember->User->name;
     }
 
     public function Draft()
