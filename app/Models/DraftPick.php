@@ -26,7 +26,7 @@ class DraftPick extends Model
     // Attributes
     public function getUserNameAttribute()
     {
-    	return User::where('id', $this->user_id)->first()->name;
+    	return User::where('api_token', $this->user_id)->first() ? ->name;
     }
 
     public function Draft()
