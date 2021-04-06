@@ -40,7 +40,7 @@ class createSnakeDraftOrder {
 
 		$membersCount = count($members);
 
-		$picks = DraftPick::where('draft_id', $draft->id)->orderBy('draft_pick')->limit($membersCount);
+		$picks = DraftPick::where('draft_id', $draft->id)->orderBy('draft_pick')->limit($membersCount)->get();
 
 		foreach($picks as $pick) {
 			print($pick->draft_pick . '. ' . $pick->User->name . PHP_EOL);
