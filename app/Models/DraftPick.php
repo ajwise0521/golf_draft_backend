@@ -32,7 +32,7 @@ class DraftPick extends Model
     // Attributes
     public function getUserNameAttribute()
     {
-    	return $this->leagueMember->User->name;
+    	return $this->User->name;
     }
 
     public function Draft()
