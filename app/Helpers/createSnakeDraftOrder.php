@@ -29,7 +29,7 @@ class createSnakeDraftOrder {
 			foreach($members as $member) {
 				$draftPick = new DraftPick();
 				$draftPick->draft_id = $draft->id;
-				$draftPick->user_id = $member->user->id;
+				$draftPick->user_id = $member['user']['id'];
 				$draftPick->draft_pick = $draftNumber;
 				$draftPick->save();
 				$draftNumber++;
