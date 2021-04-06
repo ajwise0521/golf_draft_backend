@@ -8,7 +8,7 @@ use App\Models\LeagueMember;
 class createSnakeDraftOrder {
 	
 	function getLeaguePlayers($leagueId) {
-		$members = LeagueMember::where('league_id', $leagueId)->whereNotNull('deleted_at')->inRandomOrder()->get()->toArray();
+		$members = LeagueMember::where('league_id', $leagueId)->whereNull('deleted_at')->inRandomOrder()->get()->toArray();
 
 		return $members;
 	}
