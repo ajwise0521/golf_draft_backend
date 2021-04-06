@@ -15,6 +15,8 @@ class createSnakeDraftOrder {
 
 	function createDraftOrder($numRounds, $tournamentId, $leagueId) {
 
+
+		print('randomizing Draft order' . PHP_EOL);
 		$members = $this->getLeaguePlayers($leagueId);
 
 		$draft = new Draft();
@@ -33,6 +35,14 @@ class createSnakeDraftOrder {
 			}
 
 			$members = array_reverse($members);
+		}
+
+		$membersCount = count($members);
+
+		$picks = DraftPick::where('draft_id', $draft->id)->orderBy('draft_pick')->limit($membersCount);
+
+		foreach($picks as $pick) {
+			print($pick->draft_pick . '. ' . $pick->User->name . PHP_EOL);
 		}
 	}
 }
