@@ -99,13 +99,13 @@
                     }.bind(this))
             },
             checkIsDrafting: function () {
+                console.log(vueStore.state.auth.user_id);
+                console.log(this.currentPick.user_id);
+                console.log('hello again');
                 if(vueStore.state.auth.user_id == this.currentPick.user_id) {
                     this.isDrafting = true;
                     this.playSound('sounds/your_turn_to_draft.mp3');
                 }
-                console.log(vueStore.state.auth.user_id);
-                console.log(this.currentPick.user_id);
-                console.log('hello again');
             },
             playerDrafted: function() {
                 this.loadPlayers();
