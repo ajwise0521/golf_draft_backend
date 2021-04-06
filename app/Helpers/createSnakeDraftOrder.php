@@ -21,6 +21,7 @@ class createSnakeDraftOrder {
 
 		$draft = new Draft();
 		$draft->tournament_id = $tournamentId;
+		$draft->league_id = $leagueId;
 		$draft->save();
 
 		$draftNumber = 1;
